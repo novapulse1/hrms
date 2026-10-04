@@ -133,8 +133,67 @@ assert(
   `Mode: ${legacyHost.mode}, Tenant ID: ${legacyHost.tenantId}`
 );
 
-// Restore full modules for Silaris
+// ----------------------------------------------------
+// TEST 7: NovaPulse (NP-000001) Custom 4-Module Persistence Across Re-init/Reload
+// ----------------------------------------------------
+const novaPulse4Modules = ['dashboard', 'employees', 'attendance', 'leaves'];
+const updateResNP = TenantService.updateEnabledModules('NP-000001', novaPulse4Modules, 'Super Admin');
+assert(
+  updateResNP.success,
+  'Super Admin successfully configures NovaPulse (NP-000001) with exactly 4 modules',
+  `Configured modules: ${novaPulse4Modules.join(', ')}`
+);
+
+// Simulate page reload / application startup
+(StorageEngine as any).initialized = false;
+StorageEngine.init();
+
+const reloadedNP = TenantService.getById('NP-000001');
+assert(
+  !!reloadedNP &&
+  Array.isArray(reloadedNP.enabledModules) &&
+  reloadedNP.enabledModules.length === 4 &&
+  novaPulse4Modules.every(m => reloadedNP.enabledModules!.includes(m)) &&
+  !reloadedNP.enabledModules.includes('shifts') &&
+  !reloadedNP.enabledModules.includes('payroll') &&
+  !reloadedNP.enabledModules.includes('tasks'),
+  'NovaPulse 4-module configuration persists across reload without being overwritten by seed defaults',
+  `Reloaded Modules: ${reloadedNP?.enabledModules?.join(', ')}`
+);
+
+// ----------------------------------------------------
+// TEST 8: PlanService Enforces Exact 4-Module Entitlement for NovaPulse
+// ----------------------------------------------------
+assert(
+  PlanService.isModuleAllowedForTenant('dashboard', reloadedNP!) === true &&
+  PlanService.isModuleAllowedForTenant('employees', reloadedNP!) === true &&
+  PlanService.isModuleAllowedForTenant('attendance', reloadedNP!) === true &&
+  PlanService.isModuleAllowedForTenant('leaves', reloadedNP!) === true &&
+  PlanService.isModuleAllowedForTenant('shifts', reloadedNP!) === false &&
+  PlanService.isModuleAllowedForTenant('payroll', reloadedNP!) === false &&
+  PlanService.isModuleAllowedForTenant('tasks', reloadedNP!) === false &&
+  PlanService.isModuleAllowedForTenant('inventory', reloadedNP!) === false,
+  'PlanService strictly allows only the 4 configured modules for NovaPulse and denies unselected modules',
+  'Dashboard, Employees, Attendance, Leaves allowed; Shifts, Payroll, Tasks, Inventory blocked'
+);
+
+// Restore full modules for Silaris and NovaPulse
 TenantService.updateEnabledModules('NP-000006', [
+  'dashboard',
+  'shifts',
+  'attendance',
+  'leaves',
+  'employees',
+  'tickets',
+  'onboarding',
+  'inventory',
+  'geolocation',
+  'payroll',
+  'tasks',
+  'settings'
+], 'Super Admin');
+
+TenantService.updateEnabledModules('NP-000001', [
   'dashboard',
   'shifts',
   'attendance',

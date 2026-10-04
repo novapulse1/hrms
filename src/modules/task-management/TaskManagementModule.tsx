@@ -101,119 +101,95 @@ export const TaskManagementModule: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Module Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-sm">
-              <CheckSquare className="w-4 h-4" />
-            </div>
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
-              Task Management
-            </h1>
-          </div>
-          <p className="text-xs text-slate-500">
-            Cross-department tasks, hierarchy-secured assignments, and sequential workflow tracking.
-          </p>
+      {/* Top Header & Navigation Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5 bg-slate-200/80 p-1 rounded-2xl w-fit overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('dashboard')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'dashboard'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5 inline text-purple-600" />
+            Dashboard
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('my_tasks')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'my_tasks'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <UserCheck className="w-3.5 h-3.5 inline text-purple-600" />
+            My Tasks
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('assigned_tasks')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'assigned_tasks'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5 inline text-purple-600" />
+            Assigned Tasks
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('projects')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'projects'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 inline text-purple-600" />
+            Team Projects
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('workflows')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'workflows'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <GitPullRequest className="w-3.5 h-3.5 inline text-purple-600" />
+            Project Workflow
+          </button>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2">
           <Button
             type="button"
+            size="sm"
             variant="outline"
             onClick={() => setIsCreateProjectModalOpen(true)}
-            className="font-bold text-xs"
+            leftIcon={<Layers className="w-3.5 h-3.5 text-purple-600" />}
           >
-            <Layers className="w-3.5 h-3.5 mr-1 text-purple-600" />
             New Project
           </Button>
           <Button
             type="button"
+            size="sm"
             variant="primary"
             onClick={() => setIsCreateTaskModalOpen(true)}
-            className="font-bold text-xs shadow-sm"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-3.5 h-3.5 mr-1" />
             Create Task
           </Button>
         </div>
-      </div>
-
-      {/* Clean SaaS Sub-Navigation Tabs (No Numeric Prefixes) */}
-      <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto pb-px">
-        <button
-          type="button"
-          onClick={() => setActiveTab('dashboard')}
-          className={`pb-3.5 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'dashboard'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <LayoutDashboard className="w-4 h-4" />
-          Dashboard
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('my_tasks')}
-          className={`pb-3.5 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'my_tasks'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <UserCheck className="w-4 h-4" />
-          My Tasks
-          <span className="ml-1 px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-            {myTasks.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('assigned_tasks')}
-          className={`pb-3.5 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'assigned_tasks'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          Assigned Tasks
-          <span className="ml-1 px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-            {assignedTasks.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('projects')}
-          className={`pb-3.5 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'projects'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Layers className="w-4 h-4" />
-          Team Projects
-          <span className="ml-1 px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-            {allProjects.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('workflows')}
-          className={`pb-3.5 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'workflows'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <GitPullRequest className="w-4 h-4" />
-          Project Workflow
-        </button>
       </div>
 
       {/* Tab Contents */}

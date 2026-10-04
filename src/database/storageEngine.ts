@@ -181,18 +181,11 @@ export class StorageEngine {
                 tenants[index].subdomain = initTenant.subdomain || initTenant.slug;
                 changed = true;
               }
-              // Safely sync enabledModules for seed tenants (e.g. adding 'tasks')
+              // Only assign default enabledModules if not already set on existing tenant record
               if (initTenant.enabledModules && initTenant.enabledModules.length > 0) {
-                if (!tenants[index].enabledModules) {
+                if (tenants[index].enabledModules === undefined || tenants[index].enabledModules === null) {
                   tenants[index].enabledModules = [...initTenant.enabledModules];
                   changed = true;
-                } else {
-                  for (const mod of initTenant.enabledModules) {
-                    if (!tenants[index].enabledModules!.includes(mod)) {
-                      tenants[index].enabledModules!.push(mod);
-                      changed = true;
-                    }
-                  }
                 }
               }
             }

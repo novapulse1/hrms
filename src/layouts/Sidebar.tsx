@@ -17,6 +17,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { PlanService } from '../services/planService';
 import { cn } from '../utils/cn';
 
 interface SidebarProps {
@@ -117,8 +118,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   // Filter items based on tenant plan enabled modules and user's permissions
   const visibleItems = navigationItems.filter(item => {
-    if (activeTenant?.enabledModules !== undefined && Array.isArray(activeTenant.enabledModules)) {
-      if (!activeTenant.enabledModules.includes(item.moduleKey)) return false;
+    if (activeTenant) {
+      if (!PlanService.isModuleAllowedForTenant(item.moduleKey, activeTenant)) {
+        return false;
+      }
     }
     if (isSuperAdmin) return true;
     return can(item.moduleKey, 'view');

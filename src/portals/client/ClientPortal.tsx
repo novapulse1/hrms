@@ -21,6 +21,7 @@ import { MMPInsightsModule } from '../../modules/mmp-insights/MMPInsightsModule'
 import { SettingsModule } from '../../modules/settings/SettingsModule';
 import { SetupWizardModal } from '../../components/common/SetupWizardModal';
 import { useAuth } from '../../context/AuthContext';
+import { PlanService } from '../../services/planService';
 
 export const ClientPortal: React.FC = () => {
   const { activeTenant, isSuperAdmin } = useAuth();
@@ -29,11 +30,8 @@ export const ClientPortal: React.FC = () => {
 
   // Security layer: Verify tenant module entitlement
   const isModuleEntitled = (modKey: string): boolean => {
-    if (isSuperAdmin) return true;
-    if (activeTenant?.enabledModules !== undefined && Array.isArray(activeTenant.enabledModules)) {
-      return activeTenant.enabledModules.includes(modKey);
-    }
-    return true;
+    if (!activeTenant) return true;
+    return PlanService.isModuleAllowedForTenant(modKey, activeTenant);
   };
 
   const renderModuleContent = () => {
