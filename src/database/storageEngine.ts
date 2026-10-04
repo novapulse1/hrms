@@ -175,10 +175,19 @@ export class StorageEngine {
             if (index === -1) {
               tenants.push(initTenant);
               changed = true;
-            } else if (!tenants[index].slug && initTenant.slug) {
-              tenants[index].slug = initTenant.slug;
-              tenants[index].subdomain = initTenant.subdomain || initTenant.slug;
-              changed = true;
+            } else {
+              if (!tenants[index].slug && initTenant.slug) {
+                tenants[index].slug = initTenant.slug;
+                tenants[index].subdomain = initTenant.subdomain || initTenant.slug;
+                changed = true;
+              }
+              // Only assign default enabledModules if not already set on existing tenant record
+              if (initTenant.enabledModules && initTenant.enabledModules.length > 0) {
+                if (tenants[index].enabledModules === undefined || tenants[index].enabledModules === null) {
+                  tenants[index].enabledModules = [...initTenant.enabledModules];
+                  changed = true;
+                }
+              }
             }
           }
           if (changed) {
